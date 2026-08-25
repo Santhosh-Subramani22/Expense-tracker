@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DailyWallet - Passbook History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root { --bg-outer: #f4dfe3; --app-bg: #fff; --sidebar-bg: #eef1fc; --primary-blue: #3b66ff; --text-dark: #1e2438; --text-muted: #8c93a8; --border-light: #edf0f8; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; }
+        body { background: var(--bg-outer); min-height: 100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+        .dashboard-container { width:100%; max-width:1320px; height:90vh; background: var(--app-bg); border-radius:36px; display:grid; grid-template-columns:250px 1fr; overflow:hidden; }
+        aside.sidebar { background: var(--sidebar-bg); padding:32px 20px; display:flex; flex-direction:column; justify-content:space-between; }
+        .logo { font-size:22px; font-weight:700; color:var(--text-dark); display:flex; align-items:center; gap:10px; margin-bottom:36px; padding-left:12px; }
+        .nav-links { list-style:none; display:flex; flex-direction:column; gap:8px; }
+        .nav-links a { display:flex; align-items:center; gap:14px; padding:12px 18px; border-radius:14px; text-decoration:none; color:var(--text-muted); font-weight:600; font-size:14px; }
+        .nav-links li.active a, .nav-links a:hover { background:#fff; color:var(--primary-blue); }
+        .user-profile { display:flex; justify-content:space-between; align-items:center; padding:12px; }
+        main { padding:36px; overflow-y:auto; }
+        .header-title h2 { font-size:24px; color:var(--text-dark); font-weight:700; }
+        .header-title p { font-size:13px; color:var(--text-muted); margin-top:4px; }
+        .timeline { margin-top:24px; display:flex; flex-direction:column; gap:12px; }
+        .timeline-item { background:#fafbfe; border:1px solid var(--border-light); border-radius:16px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; }
+        .tag-spent { background:#fee2e2; color:#dc2626; padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700; }
+        .tag-updated { background:#e0e7ff; color:#3b66ff; padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700; }
+        .details { font-size:13px; color:var(--text-dark); font-weight:600; }
+        .timestamp { font-size:12px; color:var(--text-muted); }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div>
+            <div class="logo">
+                <i data-lucide="wallet" style="color: var(--primary-blue);"></i> DailyWallet
+            </div>
+            <ul class="nav-links">
+                <li><a th:href="@{/}"><i data-lucide="layout-dashboard"></i> Pocket Dashboard</a></li>
+                <li><a th:href="@{/reports}"><i data-lucide="pie-chart"></i> Spend Analytics</a></li>
+                <li class="active"><a th:href="@{/history}"><i data-lucide="receipt"></i> Passbook History</a></li>
+                <li><a th:href="@{/settings}"><i data-lucide="sliders"></i> Settings</a></li>
+            </ul>
+        </div>
+        <div class="user-profile">
+            <div class="info">
+                <h4 th:text="${profile != null ? profile.fullName : 'Ranjith'}">Ranjith</h4>
+                <span th:text="${profile != null ? profile.role : 'Personal Account'}">Personal Account</span>
+            </div>
+            <i data-lucide="user-check" style="color: var(--primary-blue); width: 20px;"></i>
+        </div>
+    </aside>
+
+    <main>
+        <div class="header-title">
+            <h2>Passbook Activity Log</h2>
+            <p>Chronological audit log of every spent item and setting change</p>
+        </div>
+        <div class="timeline">
+            <div class="timeline-item" th:each="log : ${historyList}">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <span th:class="${log.action == 'SPENT' ? 'tag-spent' : 'tag-updated'}" th:text="${log.action}">SPENT</span>
+                    <span class="details" th:text="${log.details}">Paid ₹200 for Petrol</span>
+                </div>
+                <span class="timestamp" th:text="${#temporals.format(log.timestamp, 'dd MMM yyyy, hh:mm a')}">15 Aug 2026, 10:50 PM</span>
+            </div>
+            <div class="timeline-item" th:if="${#lists.isEmpty(historyList)}">
+                <span class="details" style="color:var(--text-muted);">No activity recorded in the passbook yet.</span>
+            </div>
+        </div>
+    </main>
+</div>
+<script>lucide.createIcons();</script>
+</body>
+</html>

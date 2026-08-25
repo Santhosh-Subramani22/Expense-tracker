@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DailyWallet - User Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-outer: #f4dfe3;
+            --app-bg: #fff;
+            --sidebar-bg: #eef1fc;
+            --primary-blue: #3b66ff;
+            --text-dark: #1e2438;
+            --text-muted: #8c93a8;
+            --border-light: #edf0f8;
+            --success-green: #059669;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; }
+        body { background: var(--bg-outer); min-height: 100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+        .dashboard-container { width:100%; max-width:1320px; height:90vh; background: var(--app-bg); border-radius:36px; display:grid; grid-template-columns:250px 1fr; overflow:hidden; }
+        aside.sidebar { background: var(--sidebar-bg); padding:32px 20px; display:flex; flex-direction:column; justify-content:space-between; }
+        .logo { font-size:22px; font-weight:700; color:var(--text-dark); display:flex; align-items:center; gap:10px; margin-bottom:36px; padding-left:12px; }
+        .nav-links { list-style:none; display:flex; flex-direction:column; gap:8px; }
+        .nav-links a { display:flex; align-items:center; gap:14px; padding:12px 18px; border-radius:14px; text-decoration:none; color:var(--text-muted); font-weight:600; font-size:14px; }
+        .nav-links li.active a, .nav-links a:hover { background:#fff; color:var(--primary-blue); box-shadow: 0 4px 15px rgba(59, 102, 255, 0.08); }
+        .user-profile { display:flex; justify-content:space-between; align-items:center; padding:12px; }
+        main { padding:36px; overflow-y:auto; position: relative; }
+
+        .header-title h2 { font-size:24px; color:var(--text-dark); font-weight:700; }
+        .header-title p { font-size:13px; color:var(--text-muted); margin-top:4px; }
+
+        .profile-layout { display:grid; grid-template-columns: 280px 1fr; gap:24px; margin-top:24px; }
+        
+        .avatar-card { background:#fafbfe; border:1px solid var(--border-light); border-radius:24px; padding:28px 20px; text-align:center; display:flex; flex-direction:column; align-items:center; }
+        .avatar-circle { width:90px; height:90px; border-radius:50%; background:var(--primary-blue); color:#fff; font-size:32px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-bottom:16px; box-shadow:0 8px 20px rgba(59,102,255,0.2); }
+        .avatar-card h3 { font-size:18px; color:var(--text-dark); }
+        .avatar-card span { font-size:13px; color:var(--text-muted); margin-top:4px; }
+        .stats-mini { width:100%; border-top:1px solid var(--border-light); margin-top:20px; padding-top:16px; display:flex; justify-content:space-around; }
+        .stat-item h4 { font-size:16px; color:var(--text-dark); }
+        .stat-item span { font-size:11px; color:var(--text-muted); }
+
+        .details-card { background:#fff; border:1px solid var(--border-light); border-radius:24px; padding:28px; }
+        .form-grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+        .form-group { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+        label { font-size:12px; font-weight:600; color:var(--text-muted); }
+        input { padding:10px 14px; border:1px solid var(--border-light); border-radius:12px; font-size:13px; outline:none; }
+        .btn-save { background:var(--primary-blue); color:#fff; border:none; padding:12px 24px; border-radius:12px; font-weight:600; cursor:pointer; margin-top:8px; }
+
+        /* TOP-RIGHT GREEN SUCCESS TOAST */
+        .toast-top-right {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            background: #065f46;
+            color: #ffffff;
+            padding: 14px 22px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 12px 30px rgba(6, 95, 70, 0.28);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(-80px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 9999;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .toast-top-right.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div>
+            <div class="logo">
+                <i data-lucide="wallet" style="color: var(--primary-blue);"></i> DailyWallet
+            </div>
+            <ul class="nav-links">
+                <li><a th:href="@{/}"><i data-lucide="layout-dashboard"></i> Pocket Dashboard</a></li>
+                <li><a th:href="@{/reports}"><i data-lucide="pie-chart"></i> Spend Analytics</a></li>
+                <li><a th:href="@{/history}"><i data-lucide="receipt"></i> Passbook History</a></li>
+                <li class="active"><a th:href="@{/profile}"><i data-lucide="user"></i> Profile</a></li>
+                <li><a th:href="@{/settings}"><i data-lucide="sliders"></i> Settings</a></li>
+            </ul>
+        </div>
+        <div class="user-profile">
+            <div class="info">
+                <h4 th:text="${profile != null ? profile.fullName : 'Ranjith'}">Ranjith</h4>
+                <span th:text="${profile != null ? profile.role : 'Personal Account'}">Personal Account</span>
+            </div>
+            <i data-lucide="user-check" style="color: var(--primary-blue); width: 20px;"></i>
+        </div>
+    </aside>
+
+    <main>
+        <div class="header-title">
+            <h2>User Profile</h2>
+            <p>View and update your personal account identity</p>
+        </div>
+
+        <div class="profile-layout">
+            <div class="avatar-card">
+                <div class="avatar-circle" th:text="${#strings.substring(profile.fullName, 0, 1)}">R</div>
+                <h3 th:text="${profile.fullName}">Ranjith</h3>
+                <span th:text="${profile.role}">Personal Account</span>
+
+                <div class="stats-mini">
+                    <div class="stat-item">
+                        <h4 th:text="${entryCount}">0</h4>
+                        <span>Transactions</span>
+                    </div>
+                    <div class="stat-item">
+                        <h4 th:text="'₹ ' + ${totalSpent}">₹ 0</h4>
+                        <span>Total Spent</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="details-card">
+                <form th:action="@{/profile/update}" th:object="${profile}" method="post">
+                    <input type="hidden" th:field="*{id}"/>
+                    <input type="hidden" th:field="*{currency}"/>
+                    <input type="hidden" th:field="*{emailNotifications}"/>
+                    <input type="hidden" th:field="*{monthlyReportAlert}"/>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" th:field="*{fullName}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Account Tag / Role</label>
+                            <input type="text" th:field="*{role}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" th:field="*{email}" required>
+                    </div>
+
+                    <button type="submit" class="btn-save">Update Profile</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Top-Right Success Toast Notification -->
+<div id="topRightToast" class="toast-top-right">
+    <i data-lucide="check-circle-2" style="color: #34d399; width: 20px; height: 20px;"></i>
+    <span>Profile updated successfully!</span>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    // Check for '?success' query parameter to trigger toast
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('success')) {
+        const toast = document.getElementById('topRightToast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+</script>
+</body>
+</html>

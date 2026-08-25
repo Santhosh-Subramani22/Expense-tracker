@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<aside th:fragment="sidebar(activeSection)" class="sidebar">
+    <div>
+        <div class="logo">
+            <i data-lucide="layers" style="color: #3b66ff;"></i> Binder
+        </div>
+        <ul class="nav-links">
+            <li th:class="${activeSection == 'dashboard' ? 'active' : ''}">
+                <a th:href="@{/}"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+            </li>
+            <li th:class="${activeSection == 'reports' ? 'active' : ''}">
+                <a th:href="@{/reports}"><i data-lucide="file-text"></i> Reports</a>
+            </li>
+            <li th:class="${activeSection == 'history' ? 'active' : ''}">
+                <a th:href="@{/history}"><i data-lucide="history"></i> History</a>
+            </li>
+            <li th:class="${activeSection == 'profile' ? 'active' : ''}">
+                <a th:href="@{/profile}"><i data-lucide="user"></i> Profile</a>
+            </li>
+            <li th:class="${activeSection == 'settings' ? 'active' : ''}">
+                <a th:href="@{/settings}"><i data-lucide="settings"></i> Settings</a>
+            </li>
+        </ul>
+    </div>
+
+   <div class="user-profile">
+    <div class="info">
+        <h4 th:text="${profile != null ? profile.fullName : 'Marcos Kahn'}">Marcos Kahn</h4>
+        <span th:text="${profile != null ? profile.role : 'HR Manager'}">HR Manager</span>
+    </div>
+    <a th:href="@{/settings}" class="logout-btn"><i data-lucide="power"></i></a>
+</div>
+</aside>
+</html>
